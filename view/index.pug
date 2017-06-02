@@ -1,0 +1,19 @@
+html
+	head
+		title Blog Application
+	body
+		form(action="/", id="login", method="POST")
+			h1 Welcome Back!
+			fieldset(class="inputs")
+				input(class='username', type="text", placeholder="Type your name...", autofocus required)
+				br
+				br
+				input(class="password", type="password", placeholder="Type your password...", required)
+			fieldset(id="actions") 
+				input(type="button", class="submit", value="LOG IN", onclick="location.href='/profile'")
+				|
+				|				
+				a(class="link", href="/signup") SIGN UP!
+				|
+				|
+				a(class="link", href="/reset") FORGOT YOUR PASSWORD? 
