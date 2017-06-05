@@ -55,33 +55,33 @@ app.get('/profile', function (request, response) {
     }
 });
 
-app.post('/login', bodyParser.urlencoded({extended: true}), function (request, response) {
-    if(request.body.email.length === 0) {
-        response.end('Please fill out your email address')
-        response.redirect('/login');
-        return;
-    }
+// app.post('/login', bodyParser.urlencoded({extended: true}), function (request, response) {
+//     if(request.body.email.length === 0) {
+//         response.end('Please fill out your email address')
+//         response.redirect('/login');
+//         return;
+//     }
 
-    if(request.body.password.length === 0) {
-        response.end('Please fill out your password');
-        response.redirect('/login')
-    }
+//     if(request.body.password.length === 0) {
+//         response.end('Please fill out your password');
+//         response.redirect('/login')
+//     }
 
-    User.findOne({
-        where: {
-            email: request.body.email
-        }
-    }).then(function (user) {
-        if (user !== null && request.body.password === user.password) {
-            request.session.user = user;
-            response.redirect('/profile');
-        } else {
-            response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-        }
-    }, function (error) {
-        response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-    });
-});
+//     User.findOne({
+//         where: {
+//             email: request.body.email
+//         }
+//     }).then(function (user) {
+//         if (user !== null && request.body.password === user.password) {
+//             request.session.user = user;
+//             response.redirect('/profile');
+//         } else {
+//             response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+//         }
+//     }, function (error) {
+//         response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+//     });
+// });
 
 
 
