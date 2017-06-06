@@ -1,13 +1,12 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser')();
+var express = require('express');
+var bodyParser = require('body-parser');
 var session = require('express-session');
 
 
 
 
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('blogapp', process.env.POSTGRES_USER,process.env.POSTGRES_PASSWORD, {
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize('blogapp', process.env.POSTGRES_USER,process.env.POSTGRES_PASSWORD, {
 	host: 'localhost',
 	dialect: 'postgres',
 	define:{
@@ -17,8 +16,11 @@ const sequelize = new Sequelize('blogapp', process.env.POSTGRES_USER,process.env
 
 var User = sequelize.define('user', {
     name: Sequelize.STRING,
+    email: Sequelize.STRING,
     password: Sequelize.STRING
 });
+
+var app = express();
 
 app.use(session({
 	secret: 'some text',
@@ -33,9 +35,22 @@ app.set('view engine', 'pug');
 app.get('/', (req, res) => {
 
 	res.render('index', {
+        message: req.query.message,
 		user: req.session.user
 	});
 
+});
+
+
+app.get('/profile', (req, res) => {
+    var user = req.session.user;
+    if (user === undefined) {
+        res.redirect('/?message=' + encodeURIComponent("Please log in to view your profile."));
+    } else {
+        res.render('profile', {
+            user: user
+        });
+    }
 });
 
 app.get('/signup', (req, res) => {
@@ -44,51 +59,49 @@ app.get('/signup', (req, res) => {
     });
 });
 
-app.get('/profile', function (request, response) {
-    var user = request.session.user;
-    if (user === undefined) {
-        response.end("please log in");
-    } else {
-        response.render('profile', {
-            user: user
-        });
+app.post('/login', bodyParser.urlencoded({extended: true}), (req, res) => {
+    if(req.body.email.length === 0) {
+        res.redirect('/?message=' + encodeURIComponent("Please fill out your email address."));
+        return;
     }
+
+    if(req.body.password.length === 0) {
+        res.redirect('/?message=' + encodeURIComponent('Please fill out your password.'));
+        return;
+    }
+
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+        
+    }).then(function (user) {
+        if (user !== null && req.body.password === user.password) {
+            req.session.user = user;
+            res.redirect('/profile');
+        } else {
+            res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+        }
+    }, function (error) {
+        res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+    });
 });
 
-// app.post('/login', bodyParser.urlencoded({extended: true}), function (request, response) {
-//     if(request.body.email.length === 0) {
-//         response.end('Please fill out your email address')
-//         response.redirect('/login');
-//         return;
-//     }
-
-//     if(request.body.password.length === 0) {
-//         response.end('Please fill out your password');
-//         response.redirect('/login')
-//     }
-
-//     User.findOne({
-//         where: {
-//             email: request.body.email
-//         }
-//     }).then(function (user) {
-//         if (user !== null && request.body.password === user.password) {
-//             request.session.user = user;
-//             response.redirect('/profile');
-//         } else {
-//             response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-//         }
-//     }, function (error) {
-//         response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-//     });
-// });
-
-
+app.get('/logout', (req, res) => {
+    req.session.destroy(function(error){
+        if(error){
+            throw error;
+        }
+        res.redirect('/?message=' + encodeURIComponent("Successfully logged out."));
+    });
+});
 
 sequelize.sync({force: true}).then(function () {
     User.create({
         name: "stabbins",
+        email: "iuliia@gmail.com",
         password: "not_password"
+
     }).then(function () {
         var server = app.listen(3000, function () {
             console.log('BlogApp listening on port: ' + server.address().port);

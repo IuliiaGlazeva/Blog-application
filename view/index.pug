@@ -2,18 +2,34 @@ html
 	head
 		style
 			include index.css
-		title Blog Application
+		script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+		script.
+			$(document).ready(function(){
+				$('#submit').click(function(event){
+					if($('.email').val().trim().length === 0 || $('.password').val().trim().length === 0) {
+						event.preventDefault();
+						$('#error-message').html('Your username or password is empty');
+					}
+				});
+			});
+
 	body
-		div(class="container")
-			form(action="/", id="login", method="POST")
-				div(class="header")
-					h3 Welcome Back!
-				div(class="sep")
-				div(class="inputs")
-					input(class='username', type="text", placeholder="Your email or username", autofocus required)
-					input(class="password", name="password",type="password", placeholder="Your password", required)
-					div(class="checkboxy")
-						input(name="checky", class="checky", value="1", type="checkbox")
-						label(class="terms") Keep me logged in
-					a(id="submit", href='/profile') LOG IN!
-					a(id="submit", href="/signup") SIGN UP!
+		if user
+			a(href='/profile') view profile
+			br
+			a(href='/logout') log out
+		else
+			div(class="container")
+				form(action="/login", id="login", method="POST")
+					div(class="header")
+						h3 Welcome Back!
+					div(class="sep")
+					div(class="inputs")
+						input(class='username', type="text", placeholder="Your email or username", autofocus required)
+						input(class="password", name="password",type="password", placeholder="Your password", required)
+						div(class="checkboxy")
+							input(name="checky", class="checky", value="1", type="checkbox")
+							label(class="terms") Keep me logged in
+						input(type='submit', value='LOG IN!', id='submit')
+						a(id="submit", href="/signup") SIGN UP!
+		h2#error-message= message
