@@ -1,20 +1,11 @@
 html
 	head
-		style
-			include signup.css
-		title Blog Application
 	body
-		div(class="container")
-			form(action="/signup", id="signup", method="POST")
-				div(class="header")
-					h3 Choose Your Credentials
-				div(class="sep")
-				div(class="inputs")
-					input(class='username', type="text", placeholder="Username", autofocus required)
-					input(class="email", type="email", placeholder="Email Address", required)
-					input(class="password", type="password", placeholder="Desired Password", required)
-					div(class="checkboxy")
-						input(name="checky", class="checky", value="1", type="checkbox")
-						label(class="terms") I accept the terms of use
-					a(id="submit", href='/profile') SIGN UP FOR INVITE NOW
-					
+		form(method="post" action="/signup")
+			label Name
+			input(type="text" class="form-control" placeholder="Name" name="name")
+			label Email
+			input(type="email" class="form-control" placeholder="email" name="email")
+			label Password
+			input(type="password" class="form-control" placeholder="password" name="password")
+			button(type="submit" class="btn-default") Submit
