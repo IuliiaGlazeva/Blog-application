@@ -110,11 +110,13 @@ app.post('/signup', function(request, response){
     })
 })
 
-app.get('/messages', function(request, response) =>{
+
+app.get('/messages', function(request, response){
     response.render('messages', {
 
     });
 });
+
  app.post('/messages', function(request, response){
     sequelize.sync({force: true})
     .then(() => {
