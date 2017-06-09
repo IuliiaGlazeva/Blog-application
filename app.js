@@ -22,6 +22,9 @@ var Message = sequelize.define('message', {
     message: Sequelize.STRING
 })
 
+User.hasMany(Message)
+Message.belongsTo(User)
+
 var app = express();
 
 app.use(bodyParser.urlencoded({
@@ -97,7 +100,7 @@ app.get('/signup', function (request, response) {
 });
 
 app.post('/signup', function(request, response){
-    sequelize.sync({force: true})
+    sequelize.sync()
     .then(() => {
         User.create({
         name: request.body.name,
@@ -112,26 +115,77 @@ app.post('/signup', function(request, response){
 
 
 app.get('/messages', function(request, response){
-    response.render('messages', {
-
-    });
+    Message.findAll()
+        .then((messages)=>{
+            response.render('messages', {
+                messages: messages
+            });
+        })
 });
 
- app.post('/messages', function(request, response){
-    sequelize.sync({force: true})
-    .then(() => {
-        Message.create({
+app.post('/messages', function(request, response){
+    // //welcher user schreibt die Nachricht?
+        User.findOne({
+            where: {
+                id: request.session.user.id //userId des eingelogten Users
+            }
+        })
+        .then((user) => {
+            console.log(user);
+            user.createMessage({
+                title: request.body.title,
+                message: request.body.message
+            })
+            .then(() => {
+                response.redirect('/myposts')
+            })
+        });
+    //user.createMessage
+     Message.create({
         title: request.body.title,
-        body: request.body.body
-        })
-        .then(() => {
-        response.redirect('/newpost')
-        })
+        message: request.body.message
     })
+    .then(() => {
+        response.redirect('/myposts')
+    })
+})
 
- })   
+ 
+app.get('/specialPost', function(request, response) {
+    var postId = request.session.id;
+    Message.findOne({
+        where {         
+            id: request.session.user.id
+        }
+          include
+    })
+   
+  
+})
 
-sequelize.sync({force: true}).then(function () {
+ app.get('/myposts', function(request, response){
+    console.log(request.session.user)
+    Message.findAll({
+        where: {
+            id: request.session.user.id
+        }
+    })
+    .then( (posts) => {
+        console.log(posts)
+        response.render('myposts', {posts: posts})  
+    })
+})
+
+app.get('/allposts', function(request, response){
+    console.log(request.session.user)
+    Message.findAll()
+    .then( (posts) => {
+        response.render('allposts', 
+            {posts: posts})  
+    })
+})
+
+sequelize.sync({force: false}).then(function () {
     User.create({
         name: "stabbins",
         email: "iuliia@gmail.com",

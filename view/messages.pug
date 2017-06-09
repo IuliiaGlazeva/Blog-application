@@ -1,0 +1,12 @@
+html
+	head
+	body
+		each info in messages
+			h1 #{info.title}
+			p #{info.message}
+
+		form(action="/messages", method="POST")
+			input(type="text", placeholder="Hey there! Any questions?", name="title" required, maxlength="40")
+			textarea(name="message", placeholder="Type your message...", rows="4", cols="50", class="message"  required)
+			input(type="submit", value="Submit", name="submit", class="btn")
+		a(href="/myposts") go to myposts

@@ -7,23 +7,22 @@ html
 				$('#submit').click(function(event) {
 					if($('#email').val().trim().length === 0 || $('#password').val().trim().length === 0) {
 						event.preventDefault();
-						$('#error-message').html("Your username or password is empty.");
+						$('#error-message')
+						alert('error')
 					}
 				});
 			});
 	body
-		if user
-			a(href='/profile') view profile
-			br
-			a(href='/logout') log out
-			br
-			a(href='/signup') sign up!
-		else
-			form(action='/login' method='post')
-				label email
-				input(id='email' name='email' required)
-				label password
-				input(id='password' name='password', required)
-				input(type='submit' value='login' id='submit')
-
+		a(href='/profile') view profile
+		br
+		a(href='/logout') log out
+		br
+		a(href='/signup') sign up!
+		form(action='/login' method='post')
+			label email
+			input(id='email' name='email' required)
+			label password
+			input(id='password' name='password', required)
+			input(type='submit' value='login' id='submit')
 		h2#error-message= message
+		a(href="/signup")
