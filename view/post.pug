@@ -1,0 +1,13 @@
+html
+	head
+	body
+		h1 New Post!
+		p Create a new Post here!
+		form(action="/post", method="POST")
+			input(type="text", placeholder="Type your title here...", name="title" required, value="What I love" maxlength="40")
+			br
+			textarea(name="post", placeholder="Type your post...", rows="4", cols="50", class="message"  required)
+				| I love cookies
+			input(type="submit", value="Submit", name="submit", class="btn")
+			br
+		a(href="/myposts") go to myposts

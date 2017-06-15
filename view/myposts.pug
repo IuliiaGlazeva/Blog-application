@@ -1,7 +1,14 @@
 html
 	head
 	body
-		each info in posts
+		h1 SO wow
+		each info in posts	
 			p #{info.title}
-			p #{info.message}
+			p #{info.post}
+			each commentObj in info.comments
+				h5 #{commentObj.user.name} wrote: 
+				p #{commentObj.comment}
+			form(action='/comments?amazingPostId='+info.id, method='POST')
+				textarea(name="comment", placeholder="Type your comment hier...", rows="4", cols="50", class="message"  required)
+				input(type="submit", value="Submit", name="submit", class="btn")
 		a(href="/allposts")

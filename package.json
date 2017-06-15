@@ -1,0 +1,25 @@
+{
+  "name": "blog-application",
+  "version": "1.0.0",
+  "description": "blogApp",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IuliiaGlazeva/Blog-application.git"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "Iuliia Glazeva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IuliiaGlazeva/Blog-application/issues"
+  },
+  "homepage": "https://github.com/IuliiaGlazeva/Blog-application#readme",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
