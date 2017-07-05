@@ -5,7 +5,7 @@ html
 		each info in posts
 			p #{info.title}
 			p #{info.post}
-		each commentObj in info.comment
+			each commentObj in info.comments
 				h5 #{commentObj.user.name} wrote: 
 				p #{commentObj.comment}
 				form(action='/comments?amazingPostId=' + info.id, method='POST')

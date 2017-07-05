@@ -2,6 +2,7 @@ var Sequelize = require('sequelize');
 var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+const bcrypt= require('bcrypt-nodejs');
 
 var sequelize = new Sequelize('blogapp', process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, {
     host: 'localhost',
@@ -10,6 +11,7 @@ var sequelize = new Sequelize('blogapp', process.env.POSTGRES_USER, process.env.
         timestamps: false
     }
 });
+// creating tables
 
 var User = sequelize.define('user', {
     name: Sequelize.STRING,
@@ -33,7 +35,7 @@ User.hasMany(Comment)
 Comment.belongsTo(Post)
 Comment.belongsTo(User)
 
-sequelize.sync({force: false})
+sequelize.sync({force:false})
 
 const app = express();
 
@@ -42,13 +44,15 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(session({
-    secret: 'some text',
+    secret: `${process.env.SECRET_SESSION}`,
     resave: true,
     saveUninitialized: false
 }));
 
 app.set('views', 'view');
 app.set('view engine', 'pug');
+
+
 
 app.get('/', function (req, res) {
 
@@ -62,51 +66,41 @@ app.get('/', function (req, res) {
 
 
 app.post('/login', (req, res) => {
-    if(req.body.email.length === 0) {
-        res.redirect('/?message=' + encodeURIComponent("Please fill out your email address."));
+    if(req.body.email.length ===0) {
+        res.redirect('/login?message=' + encodeURIComponent("Invalid email"));
         return;
     }
-
-    if(req.body.password.length === 0) {
-        res.redirect('/?message=' + encodeURIComponent("Please fill out your password."));
+    if(req.body.password.length ===0) {
+        res.redirect('/login?message=' + encodeURIComponent("Invalid password"));
         return;
     }
-
     User.findOne({
         where: {
-            email: req.body.email
+            email:req.body.email
         }
-    })
-    .then(function (user) {
-        //here you cannot directly use the if-statement anymore
-        //you need to use bcrypt.compare for the passwords
-        if (user !== null) {
-            //bcrypt.compare
-            // you cannot use bcrypt.compareSync
-
-            //this goes in the callback
-            req.session.user = user;
-            console.log('logged in with', user)
-            res.redirect('/profile');
-
-
-
-        // old version
-        // if (user !== null && request.body.password === user.password) {
-        //     request.session.user = user;
-        //     console.log('logged in with', user)
-        //     response.redirect('/profile');
-
-
-
-        } else {
-            res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
+    }).then((user) => { //This part needs fixing, when the email is not in the database it should not pass on, it will yield errors.
+        if(user === null) {
+            res.redirect('/login?message=' + encodeURIComponent("Does not exist!"));
+            return;
         }
-    }, 
-    function (error) {
-        res.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-    });
+        bcrypt.compare(req.body.password, user.password, (err, data)=>{
+            if (err) {
+                    throw err;
+            } else {
+                if(user !== null && data === true) {
+                    loggedInUser= user;
+                    req.session.user = loggedInUser;
+                    res.redirect('/profile');
+                } else {
+                    res.redirect('/login?message=' + encodeURIComponent("Invalid email or password."));
+                }
+            }
+        });
+    }), (error)=> {
+        res.redirect('/login?message=' + encodeURIComponent("Invalid email or password."));
+    };
 });
+
 
 app.get('/logout', (req, res) => {
     req.session.destroy(function(error) {
@@ -219,7 +213,7 @@ app.post('/post', function(req, res){
 //             userId: user.id
 //         },
 //         include: [{
-//                 model: User},
+//                 model9: User},
 //                 {
 //                 model: Post},
 //                 {
@@ -265,12 +259,14 @@ app.get('/allposts', (req, res) => {
             },
             {
                 model: Comment,
-                include: [User]
+                as: 'comments'
             }]
         }) 
         .then( (posts) => {
+
         res.render('allposts', 
-            {posts: posts})  
+            {posts: posts
+            })  
         })
     }
 })

@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/IuliiaGlazeva/Blog-application#readme",
   "dependencies": {
-    "express": "^4.15.3"
+    "bcrypt-nodejs": "0.0.3",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3"
   }
 }
